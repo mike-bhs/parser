@@ -10,6 +10,7 @@ func SelectScrapers(url string) []scrapers.Scraper {
 	allScrapers := []scrapers.Scraper{
 		scrapers.OpenGraph{Url: url},
 		scrapers.TwitterCard{Url: url},
+		scrapers.SchemaOrg{Url: url},
 	}
 
 	var selectedScrapers []scrapers.Scraper
