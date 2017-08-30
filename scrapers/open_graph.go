@@ -8,21 +8,12 @@ import (
 
 const OgPrefix = "og:"
 
-// pass to contructor only that data
-// which should be saved inside object (dependencies etc)
-// remove string dependecies
-
 type OpenGraph struct{}
 
 func (og OpenGraph) HasNecessaryData(doc *goquery.Document) bool {
-	result := false
-
-	// replace Each by EachWithBreak
-	doc.Find("meta").Each(func(i int, el *goquery.Selection) {
-		result = hasOgData(el) || result
-	})
-
-	return result
+	return doc.Find("meta").EachWithBreak(func(i int, el *goquery.Selection) bool {
+		return hasOgData(el)
+	}).Length() > 0
 }
 
 func hasOgData(element *goquery.Selection) bool {

@@ -2,35 +2,14 @@ package scrapers
 
 import (
 	"fmt"
-	"io/ioutil"
-	"net/http"
-	"strings"
 
 	"github.com/PuerkitoBio/goquery"
 )
 
 type SchemaOrg struct{}
 
-const SchemaOrgStr = "http://schema.org"
-
-// searh by itemscope attribute insted of checking for substring
 func (sch SchemaOrg) HasNecessaryData(doc *goquery.Document) bool {
-	resp, err := http.Get(doc.Url.String())
-
-	if err != nil {
-		return false
-	}
-	defer resp.Body.Close()
-
-	htmlPage, err := ioutil.ReadAll(resp.Body)
-
-	if err != nil {
-		return false
-	}
-
-	htmlString := fmt.Sprintf("%s", htmlPage)
-
-	return strings.Contains(htmlString, SchemaOrgStr)
+	return doc.Find("[itemscope]").Length() > 0
 }
 
 func (sch SchemaOrg) Perform(doc *goquery.Document, results map[string]string) {

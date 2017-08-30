@@ -11,13 +11,9 @@ const TwitterPrefix = "twitter:"
 type TwitterCard struct{}
 
 func (tw TwitterCard) HasNecessaryData(doc *goquery.Document) bool {
-	result := false
-
-	doc.Find("meta").Each(func(i int, el *goquery.Selection) {
-		result = hasTwitterData(el) || result
-	})
-
-	return result
+	return doc.Find("meta").EachWithBreak(func(i int, el *goquery.Selection) bool {
+		return hasTwitterData(el)
+	}).Length() > 0
 }
 
 func (tw TwitterCard) Perform(doc *goquery.Document, results map[string]string) {
