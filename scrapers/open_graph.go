@@ -26,13 +26,18 @@ func hasOgData(element *goquery.Selection) bool {
 	return false
 }
 
-func (og OpenGraph) Perform(doc *goquery.Document, results map[string]string) {
+func (og OpenGraph) Perform(doc *goquery.Document) map[string]string {
+	results := make(map[string]string)
+
 	doc.Find("meta").Each(func(i int, el *goquery.Selection) {
 		if hasOgData(el) {
 			ogName, _ := el.Attr("property")
 			ogData, _ := el.Attr("content")
+			ogKey := FormatMetaName(RemoveSubstring(ogName, OgPrefix))
 
-			results[FormatMetaName(ogName)] = ogData
+			results[ogKey] = ogData
 		}
 	})
+
+	return results
 }

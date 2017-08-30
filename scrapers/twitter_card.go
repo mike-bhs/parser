@@ -16,15 +16,20 @@ func (tw TwitterCard) HasNecessaryData(doc *goquery.Document) bool {
 	}).Length() > 0
 }
 
-func (tw TwitterCard) Perform(doc *goquery.Document, results map[string]string) {
+func (tw TwitterCard) Perform(doc *goquery.Document) map[string]string {
+	results := make(map[string]string)
+
 	doc.Find("meta").Each(func(i int, el *goquery.Selection) {
 		if hasTwitterData(el) {
 			twName, _ := el.Attr("name")
 			twData, _ := el.Attr("content")
+			twKey := FormatMetaName(RemoveSubstring(twName, TwitterPrefix))
 
-			results[FormatMetaName(twName)] = twData
+			results[twKey] = twData
 		}
 	})
+
+	return results
 }
 
 func hasTwitterData(element *goquery.Selection) bool {

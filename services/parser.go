@@ -14,8 +14,18 @@ func ParseSite(url string) {
 	dataMap := make(map[string]string)
 
 	for _, scraper := range scrapersList {
-		scraper.Perform(doc, dataMap)
+		ConcatMaps(dataMap, scraper.Perform(doc))
 	}
 
 	PrintResults(dataMap)
+}
+
+func ConcatMaps(mainMap, childMap map[string]string) {
+	for k, v := range childMap {
+		_, hasKey := mainMap[k]
+
+		if !hasKey {
+			mainMap[k] = v
+		}
+	}
 }

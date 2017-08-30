@@ -8,11 +8,15 @@ import (
 
 type Scraper interface {
 	HasNecessaryData(*goquery.Document) bool
-	Perform(*goquery.Document, map[string]string)
+	Perform(*goquery.Document) map[string]string
 }
 
 func FormatMetaName(name string) string {
 	return strings.Replace(name, ":", "_", -1)
+}
+
+func RemoveSubstring(str, substr string) string {
+	return strings.Replace(str, substr, "", -1)
 }
 
 // повертати з Perform готовий об'єкт
