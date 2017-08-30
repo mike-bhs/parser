@@ -1,25 +1,23 @@
 package scrapers
 
 import (
-	"regexp"
+	"strings"
 
 	"github.com/PuerkitoBio/goquery"
 )
 
-const OgRegexp = "og:.*"
+const OgPrefix = "og:"
 
-type OpenGraph struct {
-	Url string
-}
+// pass to contructor only that data
+// which should be saved inside object (dependencies etc)
+// remove string dependecies
 
-func (og OpenGraph) HasNecessaryData() bool {
-	doc, err := goquery.NewDocument(og.Url)
+type OpenGraph struct{}
+
+func (og OpenGraph) HasNecessaryData(doc *goquery.Document) bool {
 	result := false
 
-	if err != nil {
-		return false
-	}
-
+	// replace Each by EachWithBreak
 	doc.Find("meta").Each(func(i int, el *goquery.Selection) {
 		result = hasOgData(el) || result
 	})
@@ -30,22 +28,14 @@ func (og OpenGraph) HasNecessaryData() bool {
 func hasOgData(element *goquery.Selection) bool {
 	propValue, _ := element.Attr("property")
 
-	match, _ := regexp.MatchString(OgRegexp, propValue)
-
-	if match {
+	if strings.HasPrefix(propValue, OgPrefix) {
 		return true
 	}
 
 	return false
 }
 
-func (og OpenGraph) Perform(results map[string]string) {
-	doc, err := goquery.NewDocument(og.Url)
-
-	if err != nil {
-		return
-	}
-
+func (og OpenGraph) Perform(doc *goquery.Document, results map[string]string) {
 	doc.Find("meta").Each(func(i int, el *goquery.Selection) {
 		if hasOgData(el) {
 			ogName, _ := el.Attr("property")

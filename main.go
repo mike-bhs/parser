@@ -21,6 +21,5 @@ func main() {
 		return
 	}
 
-	// s.GetParsersList(input)
 	s.ParseSite(input)
 }

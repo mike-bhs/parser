@@ -9,14 +9,13 @@ import (
 	"github.com/PuerkitoBio/goquery"
 )
 
-type SchemaOrg struct {
-	Url string
-}
+type SchemaOrg struct{}
 
 const SchemaOrgStr = "http://schema.org"
 
-func (sch SchemaOrg) HasNecessaryData() bool {
-	resp, err := http.Get(sch.Url)
+// searh by itemscope attribute insted of checking for substring
+func (sch SchemaOrg) HasNecessaryData(doc *goquery.Document) bool {
+	resp, err := http.Get(doc.Url.String())
 
 	if err != nil {
 		return false
@@ -30,16 +29,11 @@ func (sch SchemaOrg) HasNecessaryData() bool {
 	}
 
 	htmlString := fmt.Sprintf("%s", htmlPage)
+
 	return strings.Contains(htmlString, SchemaOrgStr)
 }
 
-func (sch SchemaOrg) Perform(results map[string]string) {
-	doc, err := goquery.NewDocument(sch.Url)
-
-	if err != nil {
-		return
-	}
-
+func (sch SchemaOrg) Perform(doc *goquery.Document, results map[string]string) {
 	doc.Find("meta").Each(func(index int, el *goquery.Selection) {
 		if hasSchemaData(el) {
 			propName, _ := el.Attr("itemprop")

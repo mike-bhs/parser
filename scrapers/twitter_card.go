@@ -1,24 +1,17 @@
 package scrapers
 
 import (
-	"regexp"
+	"strings"
 
 	"github.com/PuerkitoBio/goquery"
 )
 
-const TwitterCardRegexp = "twitter:.*"
+const TwitterPrefix = "twitter:"
 
-type TwitterCard struct {
-	Url string
-}
+type TwitterCard struct{}
 
-func (tw TwitterCard) HasNecessaryData() bool {
-	doc, err := goquery.NewDocument(tw.Url)
+func (tw TwitterCard) HasNecessaryData(doc *goquery.Document) bool {
 	result := false
-
-	if err != nil {
-		return false
-	}
 
 	doc.Find("meta").Each(func(i int, el *goquery.Selection) {
 		result = hasTwitterData(el) || result
@@ -27,13 +20,7 @@ func (tw TwitterCard) HasNecessaryData() bool {
 	return result
 }
 
-func (tw TwitterCard) Perform(results map[string]string) {
-	doc, err := goquery.NewDocument(tw.Url)
-
-	if err != nil {
-		return
-	}
-
+func (tw TwitterCard) Perform(doc *goquery.Document, results map[string]string) {
 	doc.Find("meta").Each(func(i int, el *goquery.Selection) {
 		if hasTwitterData(el) {
 			twName, _ := el.Attr("name")
@@ -47,9 +34,7 @@ func (tw TwitterCard) Perform(results map[string]string) {
 func hasTwitterData(element *goquery.Selection) bool {
 	propValue, _ := element.Attr("name")
 
-	match, _ := regexp.MatchString(TwitterCardRegexp, propValue)
-
-	if match {
+	if strings.HasPrefix(propValue, TwitterPrefix) {
 		return true
 	}
 

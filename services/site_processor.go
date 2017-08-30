@@ -3,20 +3,21 @@ package services
 import (
 	"fmt"
 
+	"github.com/PuerkitoBio/goquery"
 	scrapers "github.com/parser/scrapers"
 )
 
-func SelectScrapers(url string) []scrapers.Scraper {
+func SelectScrapers(doc *goquery.Document) []scrapers.Scraper {
 	allScrapers := []scrapers.Scraper{
-		scrapers.OpenGraph{Url: url},
-		scrapers.TwitterCard{Url: url},
-		scrapers.SchemaOrg{Url: url},
+		scrapers.OpenGraph{},
+		scrapers.TwitterCard{},
+		scrapers.SchemaOrg{},
 	}
 
 	var selectedScrapers []scrapers.Scraper
 
 	for _, scraper := range allScrapers {
-		if scraper.HasNecessaryData() {
+		if scraper.HasNecessaryData(doc) {
 			selectedScrapers = append(selectedScrapers, scraper)
 		}
 	}
